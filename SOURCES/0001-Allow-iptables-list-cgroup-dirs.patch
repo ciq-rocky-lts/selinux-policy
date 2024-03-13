@@ -1,0 +1,25 @@
+From 0fa21e2d27cbfa940f1807e3c14943f712b94f07 Mon Sep 17 00:00:00 2001
+From: Zdenek Pytela <zpytela@redhat.com>
+Date: Wed, 16 Feb 2022 17:40:40 +0100
+Subject: [PATCH] Allow iptables list cgroup directories
+
+Addresses the following AVC denial:
+[ 1591.423033] audit: type=1400 audit(1632734301.322:867): avc:  denied  { ioctl } for  pid=11021 comm="iptables" path="/sys/fs/cgroup" dev="tmpfs" ino=1 scontext=system_u:system_r:iptables_t:s0 tcontext=system_u:object_r:cgroup_t:s0 tclass=dir permissive=0
+
+Resolves: rhbz#2008097
+---
+ policy/modules/system/iptables.te | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/policy/modules/system/iptables.te b/policy/modules/system/iptables.te
+index 495ee29e5f..3374bff1dc 100644
+--- a/policy/modules/system/iptables.te
++++ b/policy/modules/system/iptables.te
+@@ -51,6 +51,8 @@ files_manage_system_conf_files(iptables_t)
+ files_etc_filetrans_system_conf(iptables_t)
+ files_etc_filetrans(iptables_t, system_conf_t, dir)
+ 
++fs_list_cgroup_dirs(iptables_t)
++
+ manage_files_pattern(iptables_t, iptables_var_run_t, iptables_var_run_t)
+ files_pid_filetrans(iptables_t, iptables_var_run_t, file)
